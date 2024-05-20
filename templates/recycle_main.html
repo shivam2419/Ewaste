@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% load static %}
+<head>
+    {% block title %}RECYCLE{% endblock title %}
+    {% block css %}{% static 'recycle_main.css' %}{% endblock css %}
+</head>
+
+<body>
+    {% block body %}
+    <div class="recycleform">
+        <h2>Recycling {{ item|upper }}</h2>
+        <form action="" method="POST">
+            {% csrf_token %}
+            <div class="row-1">
+                <div class="col-1">
+                    <label for="">Select Brand</label>
+                    <br>
+                    <select name="brand" id="brandSelect" onchange="updateModelOptions()">
+                        <option value="" selected>Select Brand</option>
+                        <option value="lenovo">Lenovo</option>
+                        <option value="samsung">Samsung</option>
+                        <option value="asus">Asus</option>
+                        <option value="acer">Acer</option>
+                        <option value="dell">Dell</option>
+                        <option value="hp">Hp</option>
+                    </select>
+                </div>
+                <div class="col-2">
+                    <label for="">Select Model</label>
+                    <br>
+                    <select id="modelSelect" class="hidden" name="model">
+                        <option value="" selected>Select Model</option>
+                        <!-- Options will be populated dynamically based on the selected brand -->
+                    </select>
+                </div>
+            </div>
+            <div class="row-2">
+                <div class="col-1">
+                    <label for="">Recycle item price</label>
+                    <br>
+                    <input type="text" placeholder="0000" name="price">
+                </div>
+                <div class="col-2">
+                    <label for="">Pickup date</label>
+                    <br>
+                    <input type="date" name="date">
+                </div>
+            </div>
+
+
+            <div class="row-3">
+                <div class="col-1">
+                    <label for="">Location</label>
+                    <br>
+                    <input type="text" name="location">
+                    
+                </div>
+                <div class="col-2">
+                    <label for="">Pickup time</label>
+                    <br>
+                    <input type="time" placeholder="" name="time">
+                </div>
+            </div>
+
+            <div class="row-4">
+                <div class="col-1">
+                    <label for="">Phone</label>
+                    <br>
+                    <input type="number" placeholder="" name="phone">
+                </div>
+                <div class="col-2">
+                    <label for="">Select Facility</label>
+                    <br>
+                    <select id="" class="" name="facility">
+                        <option value="" selected>Select Facility</option>
+                        <option value="self" >Self reach</option>
+                        <option value="company" >Home take</option>
+                    </select>
+                </div>
+            </div>
+            <input type="submit" value="SUBMIT" id="recycle-btn">
+        </form>
+
+    </div>
+    {% endblock body %}
+    {% block script %}
+    const models = {
+    lenovo: ["Model A", "Model B", "Model C"], // Models for Lenovo
+    samsung: ["Model X", "Model Y", "Model Z"], // Models for Redmi
+    asus: ["Model X", "Model Y", "Model Z"],
+    acer: ["Model X", "Model Y", "Model Z"],
+    dell: ["Model X", "Model Y", "Model Z"],
+    hp: ["Model X", "Model Y", "Model Z"],
+    };
+
+    function updateModelOptions() {
+    const brandSelect = document.getElementById("brandSelect");
+    const modelSelect = document.getElementById("modelSelect");
+    const selectedBrand = brandSelect.value;
+
+    // Clear existing options
+    modelSelect.innerHTML = "";
+
+    // If a brand is selected, show its corresponding models
+    if (selectedBrand) {
+    const brandModels = models[selectedBrand];
+    brandModels.forEach(model => {
+    const option = document.createElement("option");
+    option.text = model;
+    option.value = model;
+    modelSelect.add(option);
+    });
+    modelSelect.classList.remove("hidden");
+    } else {
+    modelSelect.classList.add("hidden");
+    }
+    }
+    {% endblock script %}
+</body>

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PROFILE{% endblock title %}</title>
+    {% block css %}../static/profile.css{% endblock css %}
+</head>
+<body>
+    {% block body %}
+    {% if user.is_authenticated %}
+    <div class="profile-container">
+        <div class="img">
+            <img src="../static/owner.jpg" alt="">
+            <h2>{{user.username|upper}}</h2>
+        </div>
+        <label for="">Upload Image : </label>
+        <input type="file">
+        <div class="info">
+            <div class="form">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="">
+                            Last login : {{ user.last_login }}
+                        </label>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label for="id_username">Username:</label>
+                        {{ form.username }}
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label for="id_password">Password:</label>
+                        {{ form.password }}
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label for="id_email">Email:</label>
+                        {{ form.email }}
+                    </div>
+                    <br>
+                    <button type="submit" id="done">Update</button>
+                </form>
+            
+            </div>
+        </div>
+    </div>
+
+    
+    {% else %}
+    <a href="{% url 'index' %}">You are not valid user</a>
+    {% endif %}
+    {% endblock body %}
+</body>
+</html>

@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/facility.css">
+    {% block css %}../static/facility.css{% endblock css %}
+    {% block title %}E-FACILITY{% endblock title %}
+</head>
+
+<body>
+    {% block body %}
+    <div class="row">
+        <div class="col-1">
+            {% if search_query %}
+            <h2>Search Results for "{{search_query}}"</h2>
+            {% else %}
+            <h1>All Available Slots</h2>
+            {% endif %}
+            <form action="" method="GET">
+                <input type="text" placeholder="Search your Shopper" id="q" name="q">
+                <input type="submit" value="Search" id="search-btn">
+            </form>
+            {% for items in rooms %}
+            <div class="facility-card">
+                <h3 class="org-name">
+                    {{items.organisation_name}}
+                    ({{items.organisation_id}})
+                </h3>
+                <br>
+                <p class="capacity">
+                    Capacity : {{items.capacity}}
+                </p>
+                <p class="address">
+                    Latitude :
+                <p class="lat">
+                    {{items.latitude}}
+                </p>
+                Longitude :
+                <p class="long">
+                    {{items.longitude}}
+                </p>
+                </p>
+                <br>
+                <p class="contact">
+                    Contact : {{items.phone}}
+                    <br>
+                    Time : 23:12 A.M
+                    <br>
+                    Distance : 12.67 KM
+                </p>
+                <a href="" onclick="getLocation()" value="{{items.latitude}},{{items.longitude}}" id="a">Get
+                    Direction</a>
+                <a href="{% url "recycle" %}">Book Recycling</a>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="col-2">
+            <div id="mapid"></div>
+        </div>
+    </div>
+    </div>
+    {% endblock body %}
+    {% block script %}
+    var lat = document.querySelectorAll(".lat");
+    var mylat=[];
+    var longi = document.querySelectorAll(".long");
+    var mylong = [];
+    var orgname = document.querySelectorAll(".org-name");
+    var orgnamelist = [];
+    lat.forEach(function(lat) {
+    // Get the innerHTML of each paragraph
+    var innerHTML = lat.innerHTML;
+
+    // Log the innerHTML to the console
+    mylat.push(innerHTML);
+    });
+    longi.forEach(function(longi) {
+    var innerHTML = longi.innerHTML;
+    mylong.push(innerHTML);
+    });
+    orgname.forEach(function(orgname) {
+    var innerHTML = orgname.innerHTML;
+    orgnamelist.push(innerHTML);
+    });
+
+
+    window.onload = init;
+    function init() {
+    const mymap = L.map('mapid', {
+    center: [20, 80],
+    zoom: 5,
+    layers: [
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    })
+    ]
+    })
+    for (var i = 0; i < mylat.length; i++) { const marker=L.marker([mylat[i], mylong[i]], { title : orgnamelist[i]
+        }).addTo(mymap); marker.bindPopup(orgnamelist[i]).openPopup(); } mymap.on('click', function(e){ console.log(e);
+        L.Routing.control({ waypoints: [ L.latLng(28.47541284276062, 77.50047899775969), L.latLng(e.latlng.lat,
+        e.latlng.lng) ] }).addTo(mymap); console.log(e.latlng.lng, e.latlng.lat); }) } <!--Current location tracker-->
+        function getLocation() {
+        if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+        } else {
+        alert("Geolocation is not supported by this browser.");
+        }
+        }
+
+        function showPosition(position) {
+        var latitude = position.coords.latitude;
+        var longitude = position.coords.longitude;
+        alert("Latitude: " + latitude + "\nLongitude: " + longitude);
+        }
+        function showError(error) {
+        switch(error.code) {
+        case error.PERMISSION_DENIED:
+        alert("User denied the request for Geolocation.");
+        break;
+        case error.POSITION_UNAVAILABLE:
+        alert("Location information is unavailable.");
+        break;
+        case error.TIMEOUT:
+        alert("The request to get user location timed out.");
+        break;
+        case error.UNKNOWN_ERROR:
+        alert("An unknown error occurred.");
+        break;
+        }
+        }
+        {% endblock script %}
+</body>
+
+</html>

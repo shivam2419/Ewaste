@@ -1,0 +1,148 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EWaste | {% block title %}{% endblock title %}</title>
+    <link rel="stylesheet" href="{% static 'base.css' %}">
+    <link rel="stylesheet" href="{% block css %}{% endblock css %}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!--Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <!--AOS-->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+</head>
+<body>
+    <div class="nav">
+        <nav>
+            <a href="#" class="logo"><img src="../static/logo.png" alt="">
+            </a>
+            <ul class="nav-links">
+                <li><a href="{% url "index" %}">Home</a></li>
+                <li><a href="{% url "about" %}">About Us</a></li>
+                <li><a href="{% url "e-facility" %}">E-Facilities</a></li>
+                <li><a href="{% url "recycle" %}">Recycle</a></li>
+                <li><a href="{% url "education" %}">Education</a></li>
+                <li><a href="#">Rules</a></li>
+                <li><a href="{% url "contact" %}">Contact Us</a></li>
+            </ul>
+            {% if user.is_authenticated %}
+            <li class="nav-item dropdown">
+                <span class="profile-image" id="profileImage">
+                    <img src="{% static 'owner2.jpg' %}" alt="Profile"  >
+                    <p>{{user.username|upper}}</p>
+                </span>
+                
+                <div class="dropdown-menu" id="dropdownMenu">
+                  <a href="{% url 'logout' %}">Logout</a>
+                  <a href="{% url 'profile' %}">Profile</a>
+                </div>
+              </li>
+            {% else %}
+            <span>
+                <a href="{% url "login" %}" class="btn">USER LOGIN</a>
+                <a href="{% url "recycler-login" %}" class="btn">RECYCLER LOGIN</a>
+            </span>
+            {% endif %}
+        </nav>
+    </div>
+    
+    {% block body %}
+
+
+    {% endblock body %}
+    <footer>
+        <div class="footer-about">
+            <form action="{% url 'mails' %}" method="POST">
+                {% csrf_token %}
+                <img src="../static/logo.png" alt="">
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque ex veniam voluptatibus porro, nobis dolor quia fugiat saepe numquam dolores minus earum officia fuga animi excepturi dolorum, inventore aspernatur similique id reprehenderit unde laudantium! Harum quos, eaque, possimus consequatur sequi inventore repellendus corporis, eum veritatis laudantium repellat dolores voluptas commodi!</p>
+                <input type="email" placeholder="Enter your email*" name="index_gmail">
+                <span>
+                    <button type="submit">
+                        <a href="">
+                            <img src="../static/send.jpg" alt="">
+                        </a>
+                    </button>
+                </span>
+            </form>
+        </div>
+        <div class="footer-services">
+            <h3>Our Services</h3>
+            <a href="">Laptop Recycle</a><br>
+            <a href="">Smartphone Recycle</a><br>
+            <a href="">Accessories Recycle</a><br>
+            <a href="">Refrigeratir Recycle</a><br>
+            <a href="">Television Recycle</a><br>
+            <a href="">Washing Machine Recycle</a><br>
+        </div>
+        <div class="footer-company">
+            <h3>Comapany</h3>
+            <a href="">About Us</a><br>
+            <a href="">E-Waste Facilities</a><br>
+            <a href="">Education</a><br>
+            <a href="">Latest News</a><br>
+            <a href="">Contact Us</a><br>
+            <a href="">Our Blog</a><br>
+        </div>
+        <div class="footer-contact">
+            <h3>Contact Us</h3>
+            <i class="fa fa-map-marker">&nbsp;Faridabad, 121002</i><br>
+            <i class="fa fa-phone">&nbsp;+91 9932313440</i><br>
+            <i class="fa fa-envelope">&nbsp;shivam241980@gmail.com</i>
+            <h1></h1>
+            <i class="fa fa-linkedin-square" style="border: 1px solid black; padding: 8px;"></i>
+            <i class="fa fa-instagram" style="border: 1px solid black; padding: 8px;"></i>
+            <i class="fa fa-facebook-f" style="border: 1px solid black; padding: 8px;"></i>
+            <i class="fa fa-whatsapp" style="border: 1px solid black; padding: 8px;"></i>
+            
+        </div>
+    </footer>
+    <h1 id="line"></h1>
+    <!--Document JS-->
+    <script>{% block script %}{% endblock script %}</script>
+    <!--Font awesome-->
+    <script src="https://kit.fontawesome.com/yourcode.js" crossorigin="anonymous"></script>
+    <!--AOS-->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script> 
+    <!--Leaflet-->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+        const profileImage = document.getElementById("profileImage");
+        const dropdownMenu = document.getElementById("dropdownMenu");
+
+        // Show dropdown menu when hovering over image or dropdown menu itself
+        profileImage.addEventListener("mouseenter", function() {
+            dropdownMenu.style.display = "block";
+        });
+
+        dropdownMenu.addEventListener("mouseenter", function() {
+            dropdownMenu.style.display = "block";
+        });
+
+        // Hide dropdown menu when leaving dropdown menu
+        dropdownMenu.addEventListener("mouseleave", function() {
+            dropdownMenu.style.display = "none";
+        });
+
+        // Hide dropdown menu when leaving profile image
+        profileImage.addEventListener("mouseleave", function(event) {
+            // Check if the mouse is not moving into the dropdown menu
+            if (!dropdownMenu.contains(event.relatedTarget)) {
+            dropdownMenu.style.display = "none";
+            }
+        });
+        });
+
+        AOS.init();
+    </script>
+</body>
+</html>
