@@ -4,9 +4,6 @@
 </head>
 <body>
     {% block body %}
-    {% for msg in messages %}
-        <p>{{msg}}</p>
-    {% endfor %}
     <div class="form">
         <form action="" method="POST">
             {% csrf_token %}
@@ -20,7 +17,9 @@
             <label for="">Password</label>
             <br>
             <input type="password" placeholder="password" name="password">
-            <br>
+            {% for msg in messages %}
+                <p style="color:red; text-align:left;">{{msg}}</p>
+            {% endfor %}
             <span>
                 <span class="left">
                     <input type="checkbox" style="width: 20px;"> <label for="">show password</label>

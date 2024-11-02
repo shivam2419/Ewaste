@@ -61,11 +61,14 @@
         display: block;
     }
     .col-1{
-        width: 98%;
+        width: auto;
+    }
+    .col-2{
+        margin: 1%;
     }
     #mapid{
-        width: 95%;
+        width: auto;
         height: 300px;
-        margin-left: 1%;
+        margin: 1%;
     }
 }

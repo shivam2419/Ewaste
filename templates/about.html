@@ -2,38 +2,68 @@
 {% block title %}ABOUT{% endblock title %}
 {% block css %}../static/index.css{% endblock css %}
 {% block body %}
+{% load static %}
 <div class="about" id="about">
-    <p>-About E-Waste</p>
-    <h1>Making a revolution in E-Waste</h1>
+    <p>-About Scrap</p>
+    <h1>Making a revolution in Scrap</h1>
     <br><br>
     <div class="about-area">
         <div class="about-left">
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit, nemo officia incidunt totam quo
-                perferendis quasi eligendi omnis commodi repudiandae quae officiis. Ullam voluptatem dolore aliquam
-                delectus illum qui velit at itaque sequi maiores nulla nobis asperiores iste fugiat repudiandae
-                temporibus, consectetur quae sint suscipit odit dignissimos accusamus eligendi? Perferendis culpa
-                iste animi possimus dolores id adipisci corporis nobis illo eaque! Mollitia fugit quasi velit
-                aliquid, assumenda quia totam vero possimus dolor, ea repellat corrupti veniam asperiores incidunt?
-                Cupiditate fugiat soluta facere aspernatur, iste aliquid nesciunt dolorum exercitationem,
-                asperiores, ut vero. Dolore qui quo doloremque dolores cumque minus accusamus. Ab atque non,
-                voluptate id doloribus sit nisi assumenda neque, suscipit, cum blanditiis! Quo sequi facere
-                molestias ex exercitationem voluptas ipsum, doloremque vitae. Voluptate, eveniet magnam vitae quos
-                praesentium omnis dolores dignissimos dicta adipisci expedita aut voluptatem. Modi atque optio
-                asperiores ullam commodi dolorum earum possimus, aliquam impedit magnam repellat laudantium
-                repellendus, facilis veritatis doloribus. Vel iusto fugit reiciendis sequi dolorem neque possimus
-                sint aut minus optio similique earum inventore, ratione laborum eaque esse quia. Sed aliquid odit
-                quod perferendis unde voluptatibus veritatis et quibusdam. Accusantium quas, corrupti quibusdam amet
-                perferendis quis consequatur, earum, recusandae quisquam architecto ipsa officia minima harum?</p>
+            <p>
+                Welcome to ScrapBridge, your dedicated partner in tackling the global Scrap crisis. Our
+                mission is to promote sustainable electronic waste management practices, raise awareness about the
+                environmental and health impacts of Scrap, and provide practical solutions for responsible disposal
+                and recycling of electronic devices.
+                <br><br>
+                <h3>Our Mission</h3>
+
+                At ScrapBridge, we are committed to:
+                <b>Educating</b> the public about the dangers of improper Scrap disposal and the benefits of recycling.
+            <b>Facilitating</b> the safe and responsible recycling of electronic devices through accessible and
+                convenient recycling programs.
+            <b>Advocating</b> for stronger regulations and policies to ensure sustainable Scrap management and
+                reduce environmental impact.
+                <br><br>
+                <h3>What We Do</h3>
+
+                <b>Awareness Campaigns</b>: We conduct awareness campaigns to inform individuals and communities about
+                the importance of proper Scrap disposal and the harmful effects of Scrap on the environment and
+                human health.<br>
+                <b>Recycling Programs</b>: We partner with certified Scrap recycling centers to provide easy and
+                efficient recycling solutions. Our programs ensure that valuable materials are recovered and hazardous
+                substances are safely managed.<br>
+                <b>Community Engagement</b>: We work closely with local communities, schools, and organizations to
+                promote Scrap recycling initiatives and encourage participation in our programs.<br>
+                <b>Policy Advocacy</b>: We advocate for comprehensive Scrap management policies at local, national, and
+                international levels to drive systemic change and improve recycling rates.
+                <br><br>
+                <h3>Our Vision</h3>
+
+                We envision a world where electronic waste is no longer a threat to our environment and health. Through
+                collective efforts and responsible practices, we aim to create a sustainable future where electronics
+                are designed, used, and disposed of in ways that minimize their environmental footprint.
+                <br><br>
+                <h3>Get Involved</h3>
+
+                Join us in our mission to combat the Scrap crisis. Whether you are an individual looking to recycle
+                your old devices, a business seeking sustainable Scrap management solutions, or a community group
+                interested in partnering with us, there are many ways to get involved and make a difference.
+
+                <b>Donate Your Electronics</b>: Bring your old electronics to one of our recycling centers or participate in our take-back programs.<br>
+                <b>Volunteer</b>: Help us spread the word and assist with our awareness campaigns and community events.<br>
+                <b>Support Our Work</b>: Consider making a donation to support our initiatives and expand our reach.
+                <br>
+                Together, we can make a significant impact on reducing Scrap and protecting our planet for future
+                generations. Thank you for being part of the solution!
+            </p>
             <br>
             <div class="btns">
-                <a href="" id="contact-btn">CONTACT US</a>
-                <a href="" id="recycle-btn">RECYCLE SERVICES</a>
+                <a href="{% url "contact" %}" id="contact-btn">CONTACT US</a>
+                <a href="{% url "recycle" %}" id="recycle-btn">RECYCLE SERVICES</a>
             </div>
         </div>
-        <div class="about-right" data-aos="fade-left"
-        data-aos-easing="linear"
-        data-aos-duration="500">
-            <img src="../static/ewaste.jpg" alt="">
+        <div class="about-right" data-aos="fade-left" data-aos-easing="linear" data-aos-duration="500">
+            <img src={% static "ewaste.jpg" %} alt="..">
         </div>
     </div>
 

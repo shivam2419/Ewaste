@@ -78,9 +78,10 @@
 }
 @media screen and (max-width: 540px) {
     .contact-container .contact-left{
-        width: 70%;
+        width: auto;
         margin: auto;
         padding: auto;
+        margin: 2%;
     }
     .contact-container .contact-right{
         display: none;

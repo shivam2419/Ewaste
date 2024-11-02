@@ -8,112 +8,111 @@
 <body>
     {% block body %}
     <div class="recycleform">
-        <h2>Recycling {{ item|upper }}</h2>
-        <form action="" method="POST">
+        <h2> {{ item.organisation_name|upper }}</h2>
+        <form action="" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <div class="row-1">
+            {% comment %} <div class="row-1">
                 <div class="col-1">
-                    <label for="">Select Brand</label>
+                    <label for="">Organisation Id</label>
                     <br>
-                    <select name="brand" id="brandSelect" onchange="updateModelOptions()">
-                        <option value="" selected>Select Brand</option>
-                        <option value="lenovo">Lenovo</option>
-                        <option value="samsung">Samsung</option>
-                        <option value="asus">Asus</option>
-                        <option value="acer">Acer</option>
-                        <option value="dell">Dell</option>
-                        <option value="hp">Hp</option>
+                    <select name="id" id="">
+                        <option value="">--Select id--</option>
+                        {% for items in data %}
+                        <option value="{{ items.organisation_id }}">    
+                            {{items.organisation_id}}
+                        </option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="col-2">
-                    <label for="">Select Model</label>
+                    <label for="">Organisation Name</label>
                     <br>
-                    <select id="modelSelect" class="hidden" name="model">
-                        <option value="" selected>Select Model</option>
-                        <!-- Options will be populated dynamically based on the selected brand -->
+                    <select name="organisation_name" id="">
+                        <option value="">--Select name--</option>
+                        {% for items in data %}
+                        <option value="{{ items.organisation_name }}">
+                            {{items.organisation_name}}
+                        </option>
+                        {% endfor %}
                     </select>
+                </div>
+            </div> {% endcomment %}
+            <div class="row-1">
+                <div class="col-1">
+                    <label for="">Select item type*</label>
+                    <br>
+                    <select name="item_type" id="brandSelect" onchange="updateModelOptions()" required>
+                        <option value="" selected>Select type</option>
+                        <option value="paper">Paper</option>
+                        <option value="iron">Iron</option>
+                        <option value="copper">Copper</option>
+                        <option value="iron">E-waste</option>
+                        <option value="plastic">Plastic</option>
+                    </select>
+                </div>
+                <div class="col-2">
+                    <label for="">Select Date of pickup*</label>
+                    <br>
+                    <input type="date" name="date" required>
                 </div>
             </div>
             <div class="row-2">
                 <div class="col-1">
-                    <label for="">Recycle item price</label>
+                    <label for="">Phone number*</label>
                     <br>
-                    <input type="text" placeholder="0000" name="price">
+                    <input type="text" placeholder="0000" name="pnum" required>
                 </div>
                 <div class="col-2">
-                    <label for="">Pickup date</label>
+                    <label for="">Upload items image</label>
                     <br>
-                    <input type="date" name="date">
+                    <input type="file" name="image" required>
                 </div>
             </div>
+            
+            <input id="latitude" name = "latitude" hidden>
+            <input id="longitude" name = "longitude" hidden>
 
-
-            <div class="row-3">
-                <div class="col-1">
-                    <label for="">Location</label>
-                    <br>
-                    <input type="text" name="location">
-                    
-                </div>
-                <div class="col-2">
-                    <label for="">Pickup time</label>
-                    <br>
-                    <input type="time" placeholder="" name="time">
-                </div>
-            </div>
-
-            <div class="row-4">
-                <div class="col-1">
-                    <label for="">Phone</label>
-                    <br>
-                    <input type="number" placeholder="" name="phone">
-                </div>
-                <div class="col-2">
-                    <label for="">Select Facility</label>
-                    <br>
-                    <select id="" class="" name="facility">
-                        <option value="" selected>Select Facility</option>
-                        <option value="self" >Self reach</option>
-                        <option value="company" >Home take</option>
-                    </select>
-                </div>
-            </div>
             <input type="submit" value="SUBMIT" id="recycle-btn">
         </form>
-
     </div>
     {% endblock body %}
     {% block script %}
-    const models = {
-    lenovo: ["Model A", "Model B", "Model C"], // Models for Lenovo
-    samsung: ["Model X", "Model Y", "Model Z"], // Models for Redmi
-    asus: ["Model X", "Model Y", "Model Z"],
-    acer: ["Model X", "Model Y", "Model Z"],
-    dell: ["Model X", "Model Y", "Model Z"],
-    hp: ["Model X", "Model Y", "Model Z"],
-    };
+        // Function to get the user's location
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, handleError);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
 
-    function updateModelOptions() {
-    const brandSelect = document.getElementById("brandSelect");
-    const modelSelect = document.getElementById("modelSelect");
-    const selectedBrand = brandSelect.value;
+        // Function to show the user's position
+        function showPosition(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            document.getElementById("latitude").value = `${latitude}`;
+            document.getElementById("longitude").value = `${longitude}`;
+        }
 
-    // Clear existing options
-    modelSelect.innerHTML = "";
+        // Function to handle errors
+        function handleError(error) {
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    alert("Providing location is important for this functionality.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert("Location information is unavailable.");
+                    break;
+                case error.TIMEOUT:
+                    alert("The request to get user location timed out.");
+                    break;
+                case error.UNKNOWN_ERROR:
+                    alert("An unknown error occurred.");
+                    break;
+            }
+        }
 
-    // If a brand is selected, show its corresponding models
-    if (selectedBrand) {
-    const brandModels = models[selectedBrand];
-    brandModels.forEach(model => {
-    const option = document.createElement("option");
-    option.text = model;
-    option.value = model;
-    modelSelect.add(option);
-    });
-    modelSelect.classList.remove("hidden");
-    } else {
-    modelSelect.classList.add("hidden");
-    }
-    }
+        // Automatically request location when the page loads
+        window.onload = getLocation;
     {% endblock script %}
 </body>

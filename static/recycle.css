@@ -45,3 +45,15 @@
     background-color: black;
     color: white;
 }
+@media screen and (max-width: 540px) {
+    .recycle-container{
+        padding: 1% ;
+    }
+    .row-1, .row-2{
+        display: block;
+    }  
+    #card{
+        width: auto;
+        margin: 20px;
+    }
+}

@@ -1,6 +1,6 @@
 .recycleform{
     text-align: center;
-    width: 70%;
+    width: 60%;
     margin: auto;
     margin-top: 5%;
     padding: 10px;
@@ -47,4 +47,34 @@ form .row-1, form .row-2, form .row-3, form .row-4{
     color: blue;
     border: 1px solid blue;
     cursor: pointer;
+}
+
+@media screen and (max-width: 1000px) {
+    #recycle-btn{
+        width: 60%;
+    }
+    form .row-1, form .row-2, form .row-3, form .row-4{
+        display: block;
+    }
+    .col-1 input, .col-2 input{
+        width: 300px;
+        margin: 10px;
+    }
+    .col-1 select, .col-2 select{
+        width: 320px;
+        margin: 10px;
+    }
+
+}
+@media screen and (max-width: 800px) {
+    form .row-1, form .row-2, form .row-3, form .row-4{
+        display: block;
+    }
+    .col-1 input, .col-2 input{
+        width: 90%;
+    }
+    .col-1 select, .col-2 select{
+        width: 98%;
+    }
+
 }

@@ -1,15 +1,7 @@
 # models.py
-
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
-class CustomUser(AbstractUser):
-    USER_TYPE_CHOICES = (
-        ('customer', 'Customer'),
-        ('shop_owner', 'Recycle Shop Owner'),
-        ('admin', 'Admin'),
-    )
-    user_type = models.CharField(max_length=20, choices=USER_TYPE_CHOICES, default='customer')
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Login(models.Model):
@@ -30,12 +22,18 @@ class Index_gmails(models.Model):
     emails = models.EmailField()
 
 class Owner(models.Model):
-    organisation_id = models.CharField(max_length=100, default=None, null=True)
+    image = models.ImageField(upload_to='images/', null=True)
+    organisation_id = models.AutoField(primary_key=True)
     organisation_name = models.CharField(max_length=200)
-    capacity = models.IntegerField(default=None)
-    longitude = models.FloatField()
-    latitude = models.FloatField()
     phone = models.IntegerField()
+
+    street = models.CharField(max_length=400, null=True, default="")
+    city = models.CharField(max_length=400, null=True, default="")
+    state = models.CharField(max_length=400, null=True, default="")
+    zipcode = models.CharField(max_length=400, null=True, default="")
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
 
 class ContactForm(models.Model):
     name = models.CharField(max_length=100)
@@ -44,11 +42,31 @@ class ContactForm(models.Model):
     message = models.CharField(max_length=3000)
 
 class RecycleForm(models.Model):
-    brand = models.CharField(max_length=100)
-    model = models.CharField(max_length=200)
-    price= models.IntegerField()
-    date = models.CharField(max_length=100)
-    location = models.CharField(max_length=200)
-    time = models.CharField(max_length=100)
+    user_id = models.CharField(max_length=100, default=1, null=True)
+    organisation_id = models.CharField(max_length=100, default=1, null=True)
+    item_type = models.CharField(max_length=100, null=True)
+    date = models.CharField(max_length=100, null=True)
     phone = models.IntegerField()
-    facility = models.CharField(max_length=20)
+    image = models.ImageField(upload_to='recycle_images/', null=True)
+    location = models.CharField(max_length=200, null=True)
+
+    created = models.DateTimeField(auto_now_add = True, null=True)
+    status = models.CharField(max_length=10, null=True, default=False)
+    class Meta:
+        ordering = ['-created']
+
+class Notification(models.Model):
+    user = models.IntegerField(null=True)
+    status = models.CharField(max_length=100, null=True)
+    created = models.DateTimeField(auto_now_add = True)
+    message = models.CharField(max_length=500)
+    class Meta:
+        ordering = ['-created']
+        
+
+class Payments(models.Model):
+    user = models.CharField(max_length=100)
+    amount = models.IntegerField(default=0)
+
+    def __str__(self) -> str:
+        return self.user

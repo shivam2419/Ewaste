@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 <head>
     {% block css %}../static/signup.css{% endblock css %}
+    {% block title %}SIGNUP{% endblock title %}
 </head>
 <body>
     {% block body %}
@@ -25,6 +26,14 @@
             <label for="">Password</label>
             <br>
             <input type="password" placeholder="confirm password" name="confirm_Password">
+            <br><br>
+            <label for="">UserType</label>
+            <br>
+            <select name="type" id="user-type">
+                <option value="" selected>--Select Type--</option>
+                <option value="user" name="user">User</option>
+                <option value="staff" name="staff">Recycler</option>
+            </select>
             <br>
             <span>
                 <span class="left">

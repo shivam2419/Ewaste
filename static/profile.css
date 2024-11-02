@@ -72,3 +72,9 @@
 #done:hover{
     scale: 1.01;
 }
+@media screen and (max-width: 800px) {
+    .form{
+        width: auto;
+        margin: 4%;
+    }
+}

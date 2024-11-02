@@ -1,5 +1,5 @@
 .education-container{
-    padding: 4%;
+    padding: 2%;
 }
 .education-container h1{
     text-align: center;
@@ -13,16 +13,20 @@
 }
 .education-container .article .item{
     box-shadow: 1px 1px 1px 1px rgb(201, 201, 201);
-    margin: 2% 0px;
-    padding: 1%;
+    width: auto;
+    margin: 1% 0px;
+    padding: 2%;
 }
 .education-container .article .item p{
     margin-bottom: 1%;
 }
-.education-container .article .item a{
+.education-container .article .item button{
     background-color: rgb(73, 191, 255);
     padding: 10px;
     width: 150px;
+    border: 1px solid gray;
+}
+.education-container .article .item a{
     text-decoration: none;
     color: white;
 }
@@ -51,11 +55,23 @@
     margin: 10px;
     margin-bottom: 20px;
 }
-.video .row .card a{
+.video .row .card button{
     background-color: rgb(73, 191, 255);
-    padding: 10px;
+    border: none;
+    padding: 8px;
     width: 150px;
+    margin: 10px;
+}
+.video .row .card a{
     text-decoration: none;
     color: white;
-    margin: 10px;
+}
+
+@media screen and (max-width: 800px) {
+    .video .row{
+        display: block;
+    }
+    .video .row .card {
+        width: 95%;
+    }
 }

@@ -1,0 +1,46 @@
+.classify-container{
+    text-align: center; 
+    padding: 2%; 
+}
+.classify-container h1{
+    font-family: sans-serif; 
+    margin:20px;
+}
+.data-container{
+    display: flex; 
+    justify-content: space-around; 
+    margin-top: 5%;
+}
+.left-data{
+    width: 30%;
+}
+.left-data h2{
+    font-family: sans-serif; 
+    margin-bottom: 20px;
+}
+.right-data h3{
+    font-family: sans-serif; 
+    margin-bottom: 20px;
+}
+.right-data h3 span{
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+.right-data .data{
+    margin-top:20px; 
+    width: 30%; 
+    border: 1px solid gray; 
+    width: 300px;  
+    height: fit-content; 
+    padding: 10px; 
+    align-items: center;
+    margin: auto;
+}
+@media screen and (max-width: 800px) {
+    .data-container{
+        display: block;
+    }
+    .left-data{
+        width: 100%;
+        margin-bottom: 5%;
+    }
+}
