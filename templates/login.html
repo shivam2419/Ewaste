@@ -16,13 +16,16 @@
             <br><br>
             <label for="">Password</label>
             <br>
-            <input type="password" placeholder="password" name="password">
+            <!-- Add an ID to the password input for easier access -->
+            <input type="password" placeholder="password" name="password" id="password">
             {% for msg in messages %}
                 <p style="color:red; text-align:left;">{{msg}}</p>
             {% endfor %}
             <span>
                 <span class="left">
-                    <input type="checkbox" style="width: 20px;"> <label for="">show password</label>
+                    <!-- Add an ID to the checkbox and call the togglePassword function on change -->
+                    <input type="checkbox" id="show-password-checkbox" style="width: 20px;" onchange="togglePassword()"> 
+                    <label for="">Show password</label>
                 </span>
                 <span class="right">
                     <a href="">Forget password?</a>
@@ -31,11 +34,24 @@
             <button id="login-btn">
                 <a href="">Login</a>
             </button>
-            <p>don't have account? Let's create one</p>
+            <p>Don't have an account? Let's create one</p>
             <span id="signup-btn">
-                <a href="{% url "signup" %}" >Sign up</a>
+                <a href="{% url 'signup' %}">Sign up</a>
             </span>
         </form>
     </div>
+    <script>
+        // JavaScript to toggle password visibility
+        function togglePassword() {
+            var passwordField = document.getElementById("password");
+            var checkbox = document.getElementById("show-password-checkbox");
+            console.log(checkbox.checked);
+            if (checkbox.checked) {
+                passwordField.type = "text"; // show password
+            } else {
+                passwordField.type = "password"; // hide password
+            }
+        }
+    </script>
     {% endblock body %}
 </body>

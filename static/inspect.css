@@ -71,6 +71,12 @@
 @media screen and (max-width: 800px) {
     .container {
         width: auto;
+        display: block;
         margin: 4%;
+    }
+    #mapid {
+        width: auto;
+        margin: 2%;
+        height: 400px; /* Set desired height */
     }
 }

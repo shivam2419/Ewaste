@@ -63,8 +63,7 @@
             <h2>Item image  </h2><p> (Click to enlarge)</p>
             <br>
             <img src="{{ recycle_data.image.url }}" alt="" style="height: 200px; width: 400px; cursor: pointer;" id="myImage">
-            <br>
-            <button><a href="{% url 'classifyImage' %}">Inspect</a></button>
+            
             <button>
                 <label for="">Accept Request : </label>
                 <a href="">
@@ -73,7 +72,7 @@
                 </a>
             </button>
                 <label for="">Reject Request : </label>
-                <a href="{% url "rejectOrder" recycle_data.user_id %}">
+                <a href="{% url 'rejectOrder' recycle_data.user_id %}">
                     <img src="https://t3.ftcdn.net/jpg/05/38/50/06/360_F_538500677_KHHga3rUks6ftokeDbqE1qwpjpBvDdHl.jpg"
                         alt="Reject button">
                 </a>
@@ -85,6 +84,7 @@
     </div>
     <div id="myModal" class="modal">
         <span class="close" id="closeBtn"> Close X </span>
+        <br>
         <br>
         <img class="modal-content" id="modalImage">
     </div>

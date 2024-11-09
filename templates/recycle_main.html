@@ -11,32 +11,6 @@
         <h2> {{ item.organisation_name|upper }}</h2>
         <form action="" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            {% comment %} <div class="row-1">
-                <div class="col-1">
-                    <label for="">Organisation Id</label>
-                    <br>
-                    <select name="id" id="">
-                        <option value="">--Select id--</option>
-                        {% for items in data %}
-                        <option value="{{ items.organisation_id }}">    
-                            {{items.organisation_id}}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-2">
-                    <label for="">Organisation Name</label>
-                    <br>
-                    <select name="organisation_name" id="">
-                        <option value="">--Select name--</option>
-                        {% for items in data %}
-                        <option value="{{ items.organisation_name }}">
-                            {{items.organisation_name}}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div> {% endcomment %}
             <div class="row-1">
                 <div class="col-1">
                     <label for="">Select item type*</label>

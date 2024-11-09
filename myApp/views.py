@@ -1,11 +1,10 @@
-from django.shortcuts import render, HttpResponse, redirect
+from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from geopy.geocoders import Nominatim
 from .models import *
 from .forms import *
 from django.http import JsonResponse
@@ -13,6 +12,7 @@ from django.http import JsonResponse
 from openai import OpenAI
 import os
 import json
+import http.client
 from django.core.files.storage import FileSystemStorage
 from django.core.files.storage import default_storage
 from .predict import classify_image
@@ -20,7 +20,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import ImageUploadSerializer
-
+from datetime import datetime
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY", ""))
 # openai.api_key = open_api_key
 
@@ -108,24 +108,25 @@ def loginPage(request):
         # CASE : 1
         try:
             user = User.objects.get(username=username) # if User exsits in database then this will return true
+            # CASE : 2
+            user = authenticate(request, username=username, password=password) # Checking whether the given username and password is correct or not
+            
+            if user is not None:
+                if user.is_staff:
+                    print("Staff logging in")
+                    login(request, user)
+                    return redirect('recycler-login') 
+                else:
+                    print("User logging in")
+                    login(request, user)
+                    return redirect('index') 
+                # message = user.message_set.all()
+            else:
+                messages.error(request, 'Password is incorrect')
         except:
             messages.error(request, 'User does not exist')
 
-        # CASE : 2
-        user = authenticate(request, username=username, password=password) # Checking whether the given username and password is correct or not
         
-        if user is not None:
-            if user.is_staff:
-                print("Staff logging in")
-                login(request, user)
-                return redirect('recycler-login') 
-            else:
-                print("User logging in")
-                login(request, user)
-                return redirect('index') 
-            # message = user.message_set.all()
-        else:
-            messages.error(request, 'Password is incorrect')
         # In the above condition there are two cases to check validity of user you can use any of them
     context={'page':page, 'messsages':message}
     return render(request, 'login.html', context)
@@ -165,12 +166,14 @@ def registerPage(request):
                 # Create the staff
                 user = User.objects.create_user(username=name, email=mail, password=pswrd) # if User exsits in database then this will return true
                 user.is_staff = True
+                user.save()
                 # Create user
                 obj = Owner(organisation_name=name,
                             phone=1234567890,
                             latitude=1,
                             longitude=1)
                 obj.save()
+                
                 user = authenticate(username=name, password=pswrd)
                 if user is not None:
                     print("Staff signing up")
@@ -281,9 +284,14 @@ def userProfile(request):
 @login_required(login_url='login')
 def recycle_main_str(request, pk):
     message = ""
+    current_datetime = datetime.now()
+    # Format date and time as required
+    today_date = current_datetime.strftime("%d%m%y")  # e.g., "2024-11-09"
+    time_with_seconds = current_datetime.strftime("%H:%M:%S")
     if request.method == "POST":
         user_id = request.user.id
         org_id = pk
+        order_id = "scrapbridge-"+today_date+time_with_seconds
         item_type = request.POST.get('item_type')
         date = request.POST.get('date')
         phone = request.POST.get('pnum')
@@ -291,7 +299,25 @@ def recycle_main_str(request, pk):
         latitude = request.POST.get('latitude')
         longitude = request.POST.get('longitude')
         location = latitude + " " + longitude
-        obj = RecycleForm.objects.create(user_id = user_id, organisation_id = org_id, item_type = item_type, date = date, location=location, image=images, phone = phone)
+        obj = RecycleForm.objects.create(order_id = order_id, user_id = user_id, organisation_id = org_id, item_type = item_type, date = date, location=location, image=images, phone = phone)
+
+        # Sending order done message to user
+        conn = http.client.HTTPSConnection("mail-sender-api1.p.rapidapi.com")
+
+        payload = '{"sendto":"shivam241980@gmail.com","name":"ScrapBridge","replyTo":"shivam241980@gmail.com","ishtml":"false","title":"Thanks for choosing ScrapBridge","body":"Your refrence id : 123u23kjahsk"}'
+
+        headers = {
+            'x-rapidapi-key': "41f8c5c26emsh33af3107ae7eb1fp165595jsnd6e414bce373",
+            'x-rapidapi-host': "mail-sender-api1.p.rapidapi.com",
+            'Content-Type': "application/json"
+        }
+
+        conn.request("POST", "/", payload, headers)
+
+        res = conn.getresponse()
+        data = res.read()
+
+        print(data.decode("utf-8"))
 
         return redirect('index')
     data = Owner.objects.get(organisation_id = pk)
@@ -362,7 +388,8 @@ def Orders(request):
 
 @login_required(login_url='login')
 def Inspect(request, pk):
-    recycle_data = RecycleForm.objects.get(id = pk, organisation_id = request.user.id)
+    print("Order id", pk)
+    recycle_data = RecycleForm.objects.get(order_id = pk, organisation_id = request.user.id)
     full_location = str(recycle_data.location)
     split_location = full_location.split()  # This will create a list ['shivam', 'sharma']
     context = { 

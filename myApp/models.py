@@ -42,6 +42,7 @@ class ContactForm(models.Model):
     message = models.CharField(max_length=3000)
 
 class RecycleForm(models.Model):
+    order_id = models.CharField(max_length=100, primary_key=True)
     user_id = models.CharField(max_length=100, default=1, null=True)
     organisation_id = models.CharField(max_length=100, default=1, null=True)
     item_type = models.CharField(max_length=100, null=True)
