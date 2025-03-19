@@ -57,4 +57,4 @@ To install and use this project, follow these steps:
 **Scrap Collector Dashboard**
 ![image](https://github.com/user-attachments/assets/fc104499-3fb5-442f-af6e-e99f25edd211)
 
-*For other facility - I would request YOU to clone and enjoy on your own**
+*For more - I would request YOU to clone and enjoy on your own**
