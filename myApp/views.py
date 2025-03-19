@@ -239,7 +239,7 @@ def contact(request):
         obj.save()
     return render(request, 'contact.html')
 
-# client = openai.OpenAI(api_key="")
+client = openai.OpenAI(api_key="")
 from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
 def ask_openai(message):
