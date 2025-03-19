@@ -44,4 +44,17 @@ To install and use this project, follow these steps:
 # Visit http://localhost:8000 in your web browser.
 
 # A Short Look To ScrapBridge
+**Home Page**
+![image](https://github.com/user-attachments/assets/a4d0a280-98a8-49b4-b661-318d705b4004)
 
+**Near by Scrap Collector Searching facility**
+![image](https://github.com/user-attachments/assets/8199e1b4-233a-4e86-8dc4-aefea07839e8)
+
+**Scrap Classification Page**
+![image](https://github.com/user-attachments/assets/d84f7203-38bb-4c27-b68d-a8542c5779d0)
+![image](https://github.com/user-attachments/assets/05301a3b-5d87-4253-a112-8775a034c3c5)
+
+**Scrap Collector Dashboard**
+![image](https://github.com/user-attachments/assets/fc104499-3fb5-442f-af6e-e99f25edd211)
+
+*For other facility - I would request YOU to clone and enjoy on your own**
