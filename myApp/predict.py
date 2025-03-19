@@ -12,35 +12,14 @@ if not os.path.exists(model_path):
 model = load_model(model_path)
 
 # Define your class names
-class_names = ['beverage-cans',
-    'cardboard',
-    'construction-scrap',
-    'e-waste',
-    'electrical-cables',
-    'electronic-chips',
-    'gloves',
-    'laptops',
-    'masks',
-    'medical',
-    'medicines',
-    'metal',
-    'metal-containers',
-    'news-paper',
-    'other-metal-objects',
-    'paper',
-    'paper-cups',
-    'plastic',
-    'plastic-bags',
-    'plastic-bottles',
-    'plastic-containers',
-    'plastic-cups',
-    'small-appliances',
-    'smartphones',
-    'spray-cans',
-    'syringe',
-    'tetra-cups',
-    'tetra-pak',
-    'trash']
+class_names =  [
+    "beverage-cans", "cardboard", "construction-scrap", "electrical-cables",
+    "electronic-chips-or-device", "e-waste", "laptops", "medical", "metal",
+    "metal-containers", "news-paper", "other-metal-objects", "paper",
+    "paper-cups", "plastic", "plastic-bags", "plastic-bottles",
+    "plastic-containers", "plastic-cups", "small-appliances", "smartphones",
+    "spray-cans", "tetra-cups", "tetra-pak", "trash"
+]
 
 # Function to preprocess the image and make a prediction
 def classify_image(img_path):

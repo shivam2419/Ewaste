@@ -1,25 +1,30 @@
-*{
+* {
     margin: 0;
     padding: 0;
 }
-.row{
+
+.row {
     display: flex;
 }
-.col-1{
+
+.col-1 {
     padding: 10px;
     width: 25vw;
     max-height: 77vh;
     overflow-y: scroll;
 }
-.col-1 h1{
+
+.col-1 h1 {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-.col-1 #q{
+
+.col-1 #q {
     padding: 8px;
     width: 90%;
     margin-top: 1%;
 }
-.col-1 #search-btn{
+
+.col-1 #search-btn {
     background-color: rgb(8, 118, 0);
     color: white;
     padding: 8px;
@@ -30,19 +35,40 @@
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     margin: 10px;
 }
-.facility-card{
+
+.facility-card {
     padding: 15px;
     box-shadow: 1px 1px 5px 1px gray;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin-top: 20px;
 }
-.facility-card .org-name{
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+
+/* New styles to align image and org name in one row */
+.facility-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
 }
-.facility-card .contact{
+
+.facility-image {
+    border-radius: 50%;
+    height: 50px;
+    width: 50px;
+    object-fit: cover;
+}
+
+.facility-card .org-name {
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.facility-card .contact {
     margin-bottom: 20px;
 }
-.facility-card a{
+
+.facility-card a {
     background-color: blue;
     color: white;
     padding: 8px;
@@ -51,22 +77,26 @@
     border-radius: 5px;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
-#mapid{
+
+#mapid {
     height: 80vh;
     width: 75vw;
 }
 
 @media screen and (max-width: 800px) {
-    .row{
+    .row {
         display: block;
     }
-    .col-1{
+
+    .col-1 {
         width: auto;
     }
-    .col-2{
+
+    .col-2 {
         margin: 1%;
     }
-    #mapid{
+
+    #mapid {
         width: auto;
         height: 300px;
         margin: 1%;

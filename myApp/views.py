@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -9,7 +9,7 @@ from .models import *
 from .forms import *
 from django.http import JsonResponse
 # import the OpenAI Python library for calling the OpenAI API
-from openai import OpenAI
+import openai
 import os
 import json
 import http.client
@@ -21,8 +21,16 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import ImageUploadSerializer
 from datetime import datetime
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY", ""))
 # openai.api_key = open_api_key
+
+
+# conn = http.client.HTTPSConnection("mail-sender-api1.p.rapidapi.com")
+
+# headers = {
+#     'x-rapidapi-key': "41f8c5c26emsh33af3107ae7eb1fp165595jsnd6e414bce373",
+#     'x-rapidapi-host': "mail-sender-api1.p.rapidapi.com",
+#     'Content-Type': "application/json"
+# }
 
 @api_view(['POST'])
 def classify_image_view(request):
@@ -82,7 +90,13 @@ def index(request):
     return render(request, 'index.html', context)
 
 def staff(request):
-    return render(request, 'staff/index.html')
+    user = User.objects.get(pk = request.user.id) # fetching scrap collector details
+    owner = Owner.objects.get(user__id=request.user.id)
+    context = {
+        'user' : user,
+        'owner' : owner
+    }
+    return render(request, 'staff/index.html', context=context)
 
 def prices(request):
     return render(request, 'prices.html')
@@ -154,6 +168,7 @@ def registerPage(request):
             try:
                 # Create the user
                 user = User.objects.create_user(username=name, email=mail, password=pswrd) # if User exsits in database then this will return true
+                end_user = endUser.objects.create(user = user, phone=123456)
             except:
                 messages.error(request, 'Username already exists')
             user = authenticate(username=name, password=pswrd)
@@ -168,11 +183,12 @@ def registerPage(request):
                 user.is_staff = True
                 user.save()
                 # Create user
-                obj = Owner(organisation_name=name,
+                owner_obj = Owner(user = user,
+                                  organisation_name=name,
                             phone=1234567890,
                             latitude=1,
                             longitude=1)
-                obj.save()
+                owner_obj.save()
                 
                 user = authenticate(username=name, password=pswrd)
                 if user is not None:
@@ -200,7 +216,6 @@ def E_facility(request):
         Q(phone__icontains=q)
         ) #with 'q' value, it will filter by matching characters whether it's whole name or only one character.
     
-    print('help',q)
     context = {'search_query':q, 'rooms':rooms}
     return render(request, 'efacility.html',context)
 
@@ -224,26 +239,58 @@ def contact(request):
         obj.save()
     return render(request, 'contact.html')
 
+# client = openai.OpenAI(api_key="")
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
 def ask_openai(message):
-    # Example OpenAI Python library request
+    """
+    Sends a message to OpenAI and returns the response.
+    """
     MODEL = "gpt-3.5-turbo"
+    
     response = client.chat.completions.create(
         model=MODEL,
         messages=[
             {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": "Knock knock."},
-            {"role": "assistant", "content": "Who's there?"},
-            {"role": "user", "content": "Orange."},
+            {"role": "user", "content": message},
         ],
-        temperature=0,
+        temperature=0.7,  # Adjust for more creative responses
     )
-    print(json.dumps(json.loads(response.model_dump_json()), indent=4))
+    
+    # Extract AI response correctly
+    assistant_reply = response.choices[0].message.content  # Corrected extraction
 
+    return assistant_reply
+
+@csrf_exempt
 def search(request):
-    if request.method == 'POST':
-        message = request.POST.get('message')
-        response = ask_openai(message)
-        return JsonResponse({'message':message, 'response':response})
+    if request.method == "POST":
+        try:
+            if not request.body:
+                return JsonResponse({"error": "Empty request body"}, status=400)
+
+            data = json.loads(request.body)
+
+            # Try getting 'query' or 'message' field
+            search_query = data.get("query") or data.get("message")
+            
+            if not search_query:
+                return JsonResponse({"error": "Missing 'query' or 'message' field"}, status=400)
+
+            # Example: Process search query
+            bot_response = ask_openai(search_query)
+
+            return JsonResponse({
+                "message": "Search successful",
+                "query": search_query,
+                "response": bot_response
+            })
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON data"}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
     return render(request, 'help.html')
 
 @login_required(login_url='login')
@@ -253,7 +300,6 @@ def collected_gmails(request):
         data = Index_gmails(emails = mails)
         data.save()
         return redirect('index')
-    print('helo')
     return render(request, 'index.html')
 
 @login_required(login_url='login')
@@ -267,19 +313,23 @@ def notification(request):
 
 @login_required(login_url='login')
 def userProfile(request):
-    if request.method == 'POST':
-        form = UserUpdateForm(request.POST, instance=request.user)
+    user = request.user
+    end_user = endUser.objects.get(user=user)
+
+    if request.method == "POST":
+        form = UserUpdateForm(request.POST, request.FILES, instance=user)
         if form.is_valid():
-            user = form.save()
-            update_session_auth_hash(request, user)
-            return redirect('profile')  # Redirect to user profile page after successful update
-        else:
-            print(form.errors)
+            form.save()
+            if 'image' in request.FILES:
+                end_user.image = request.FILES['image']
+                end_user.save()
+                print("Profile changed")
+            return redirect('profile')  # Redirect to profile page after update
+
     else:
-        form = UserUpdateForm(instance=request.user)
-        
-    context = {'form': form}
-    return render(request, 'profile.html', context)
+        form = UserUpdateForm(instance=user)
+
+    return render(request, "profile.html", {"form": form, "user": user})
 
 @login_required(login_url='login')
 def recycle_main_str(request, pk):
@@ -287,7 +337,7 @@ def recycle_main_str(request, pk):
     current_datetime = datetime.now()
     # Format date and time as required
     today_date = current_datetime.strftime("%d%m%y")  # e.g., "2024-11-09"
-    time_with_seconds = current_datetime.strftime("%H:%M:%S")
+    time_with_seconds = current_datetime.strftime("%H%M%S")
     if request.method == "POST":
         user_id = request.user.id
         org_id = pk
@@ -299,25 +349,19 @@ def recycle_main_str(request, pk):
         latitude = request.POST.get('latitude')
         longitude = request.POST.get('longitude')
         location = latitude + " " + longitude
-        obj = RecycleForm.objects.create(order_id = order_id, user_id = user_id, organisation_id = org_id, item_type = item_type, date = date, location=location, image=images, phone = phone)
+        obj = RecycleForm.objects.create(order_id = order_id, user_id = user_id, organisation_id = pk, item_type = item_type, date = date, location=location, image=images, phone = phone)
 
         # Sending order done message to user
-        conn = http.client.HTTPSConnection("mail-sender-api1.p.rapidapi.com")
+        
 
-        payload = '{"sendto":"shivam241980@gmail.com","name":"ScrapBridge","replyTo":"shivam241980@gmail.com","ishtml":"false","title":"Thanks for choosing ScrapBridge","body":"Your refrence id : 123u23kjahsk"}'
+        payload = '{"sendto":"shivam241980@gmail.com","name":"ScrapBridge","replyTo":"shivam241980@gmail.com","ishtml":"false","title":"Thanks for choosing ScrapBridge","body":"Your refrence id : '+ order_id+'"}'
+        
+        # conn.request("POST", "/", payload, headers)
 
-        headers = {
-            'x-rapidapi-key': "41f8c5c26emsh33af3107ae7eb1fp165595jsnd6e414bce373",
-            'x-rapidapi-host': "mail-sender-api1.p.rapidapi.com",
-            'Content-Type': "application/json"
-        }
+        # res = conn.getresponse()
+        # data = res.read()
 
-        conn.request("POST", "/", payload, headers)
-
-        res = conn.getresponse()
-        data = res.read()
-
-        print(data.decode("utf-8"))
+        # print(data.decode("utf-8"))
 
         return redirect('index')
     data = Owner.objects.get(organisation_id = pk)
@@ -347,13 +391,12 @@ def recycle_main(request):
     return render(request, 'efacility.html',)
 
 @login_required(login_url='login')
-def createOwner(request, pk):
+def createOwner(request, pk):  # pk is user_id
+    owner = get_object_or_404(Owner, user__id=pk)  # Fetch Owner using user_id
+
     if request.method == 'POST':
+        # Get form data
         image = request.FILES.get('image')
-        # about = request.POST.get('about')
-        # email = request.POST.get('date')
-        user = User.objects.get(pk = request.user.id)
-        organisation_id = user.id
         organisation_name = request.POST.get('organisation_name')
         phone = request.POST.get('phone')
         street = request.POST.get('street')
@@ -363,21 +406,32 @@ def createOwner(request, pk):
         lat = request.POST.get('latitude')
         longi = request.POST.get('longitude')
 
-        obj = Owner(image=image,
-                                   organisation_id=organisation_id,organisation_name=organisation_name, phone=phone, street=street, city=city, state=state, zipcode = zip_code, latitude= lat, longitude = longi)
-        obj.save()
+        # Update Owner object
+        if image:
+            owner.image = image  # Update image only if a new one is uploaded
+        owner.organisation_name = organisation_name
+        owner.phone = phone
+        owner.street = street
+        owner.city = city
+        owner.state = state
+        owner.zipcode = zip_code
+        owner.latitude = float(lat) if lat else owner.latitude
+        owner.longitude = float(longi) if longi else owner.longitude
+
+        owner.save()  # Save updated data
         return render(request, 'staff/index.html')
-    organisation_data = Owner.objects.get(organisation_id=pk)
-    context = {
-        'organisation' : organisation_data
-    }
+
+    context = {'organisation': owner}
     return render(request, 'staff/owner.html', context)
+
         
 @login_required(login_url='login')
 def Orders(request):
-    user = User.objects.get(pk = request.user.id)
-    to_id = user.id
-    data = RecycleForm.objects.filter(organisation_id = to_id)
+    to_id = request.user.id
+    owner = Owner.objects.get(user__id=to_id)
+    organisation_id = owner.organisation_id # fetching organisation id to get users pickup request from Recycle Form
+    data = RecycleForm.objects.filter(organisation_id = organisation_id)
+    print("User id is this :-> ", request.user.id)
     data = [(index + 1, item) for index, item in enumerate(data)]
     owner_info = Owner.objects.filter(organisation_id = to_id)
     context = {
@@ -388,62 +442,117 @@ def Orders(request):
 
 @login_required(login_url='login')
 def Inspect(request, pk):
-    print("Order id", pk)
-    recycle_data = RecycleForm.objects.get(order_id = pk, organisation_id = request.user.id)
+    user = User.objects.get(pk = request.user.id) # fetching scrap collector details
+    owner = Owner.objects.get(user__id=request.user.id) # fetching organisation id to get Recycle Form data
+    organisation_id = owner.organisation_id
+    # Fetching recycle request data of user
+    recycle_data = RecycleForm.objects.get(order_id = pk, organisation_id = organisation_id)
+    user_data = User.objects.get(pk = recycle_data.user_id) # fetching requested user details
     full_location = str(recycle_data.location)
     split_location = full_location.split()  # This will create a list ['shivam', 'sharma']
-    context = { 
-        'recycle_data' : recycle_data,
-        'latitude' : split_location[0],
-        'longitude' : split_location[1]
-    }
+    
     if request.method == 'POST':
         status = 'True'
-        user = recycle_data.user_id
-        data = "Your request has been accepted by the supplier. Delievery boy will reach to you within given period."
-        obj = Notification(status = status, user = user, message = data)
+        data = "Your request has been accepted by the supplier. Delievery boy will reach to you within given period.\nScrap collector : "+ user.username + "\nScrap collector mail : " + user.email
+        print(data)
+        obj = Notification(status = status, user = recycle_data.user_id, message = data)
         obj.save()
         recycle_data = recycle_data
         recycle_data.delete()
+        payload = '{"sendto":"shivam241980@gmail.com","name":"ScrapBridge","replyTo":"shivam241980@gmail.com","ishtml":"false","title":"Thanks for choosing ScrapBridge","body":"Your request has been accepted by the supplier. Delievery boy will reach to you within given time."}'
+        
+        # conn.request("POST", "/", payload, headers)
+
+        # res = conn.getresponse()
+        # data = res.read()
+
+        # print(data.decode("utf-8"))
         return render(request, 'staff/index.html')
+    context = { 
+        'recycle_data' : recycle_data,
+        'latitude' : split_location[0],
+        'longitude' : split_location[1],
+        'user_data' : user_data
+    }
     return render(request, 'staff/inspect.html', context)
 
 @login_required(login_url='login')
 def RejectOrder(request, pk):
-    recycle_data = RecycleForm.objects.filter(user_id = pk, organisation_id = request.user.id)
-    context = { 
-        'recycle_data' : recycle_data
-    }
+    owner = Owner.objects.get(user__id= request.user.id)
+    organisation_id = owner.organisation_id
+    recycle_data = RecycleForm.objects.filter(user_id = pk, organisation_id = organisation_id)
     if request.method == 'POST':
         status = 'False'
         user = pk
         data = request.POST.get('reason')
+        payload = '{"sendto":"shivam241980@gmail.com","name":"ScrapBridge","replyTo":"shivam241980@gmail.com","ishtml":"false","title":"Thanks for choosing ScrapBridge","body":"Your request has been rejected by the supplier. Scrap collector statement : '+data+'"}'
         data = "Your order has been cancelled. Scrap Collector said  ' " + data + " '"
         obj = Notification(status = status, user = user, message = data)
         obj.save()
         recycle_data = recycle_data.first()
         recycle_data.delete()
+        
+        
+        # conn.request("POST", "/", payload, headers)
+
+        # res = conn.getresponse()
+        # data = res.read()
+
+        # print(data.decode("utf-8"))
         return render(request, 'staff/index.html')
+    context = { 
+        'recycle_data' : recycle_data
+    }
     return render(request, 'staff/reject_order.html', context)
 
 def Status(request):
     return render(request, 'staff/order_status.html')
 def Pending(request):
-    recycle_data = RecycleForm.objects.filter(status="False", organisation_id = request.user.id)
+    owner = Owner.objects.get(user__id=request.user.id)
+    organisation_id = owner.organisation_id
+    recycle_data = RecycleForm.objects.filter(status="False", organisation_id=organisation_id)
+
+    # Fetch all related users in a single query
+    user_ids = recycle_data.values_list('user_id', flat=True)
+    user_data = User.objects.filter(id__in=user_ids).values('id', 'username')
+
+    # Convert to dictionary { user_id: username }
+    user_map = {user['id']: user['username'] for user in user_data}
+
+    # Attach username to each recycle request
+    for item in recycle_data:
+        item.user_id = user_map[int(item.user_id)] # Default if user not found
+        
+
     context = {
-        'data' : recycle_data
+        'data': recycle_data
     }
+    
     return render(request, 'staff/order_pending.html', context)
+
+
 def Completed(request):
-    recycle_data = RecycleForm.objects.filter(status="True", organisation_id = request.user.id)
+    owner = Owner.objects.get(user__id= request.user.id)
+    organisation_id = owner.organisation_id
+    recycle_data = RecycleForm.objects.filter(status="True", organisation_id = organisation_id)
+    # Fetch all related users in a single query
+    user_ids = recycle_data.values_list('user_id', flat=True)
+    user_data = User.objects.filter(id__in=user_ids).values('id', 'username')
+
+    # Convert to dictionary { user_id: username }
+    user_map = {user['id']: user['username'] for user in user_data}
+
+    # Attach username to each recycle request
+    for item in recycle_data:
+        item.user_id = user_map[int(item.user_id)] # Default if user not found
+        
     context = {
         'data' : recycle_data
     }
     return render(request, 'staff/order_completed.html', context)
 
 def payment(request, pk):
-    user = RecycleForm.objects.get(user_id = pk)
-    user_name = user.name
+    user_name = pk
     your_name = request.user.username   
     if request.method == 'POST':
         try:
@@ -454,7 +563,6 @@ def payment(request, pk):
             user_one_obj = Payments.objects.get(user = user_one)
             user_one_obj.amount += int(amount)
             user_one_obj.save()
-            print(user_one)
 
             user_two_obj = Payments.objects.get(user = user_two)
             user_two_obj.amount -= int(amount)

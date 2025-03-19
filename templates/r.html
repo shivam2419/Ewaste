@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Document</title>
+</head>
+<body>
+    <center>
+        <marquee behavior="" direction="right" id="name">Vidhi Sharma</marquee> 
+    <img src="../static/default.jpg" alt="" height="200px">
+    <br><br>
+    <input type="text" id="input">
+    <br>
+    <br>
+    <button onclick="change()">Change my name!</button>
+    </center>
+    <script>
+        function change() {
+            let inputname = document.getElementById("input");
+            let name = document.getElementById("name");
+            name.innerHTML = inputname.value;
+        }
+    </script>
+</body>
+</html>

@@ -34,15 +34,23 @@
                 </tr>
                 <tr>
                     <td>
-                        Brand :
+                        Customer name :
                     </td>
                     <td>
-                        {{recycle_data.item_type}}
+                        {{user_data.username | capfirst}}
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        Product date :
+                        Brand :
+                    </td>
+                    <td>
+                        {{recycle_data.item_type | capfirst}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Date to reach :
                     </td>
                     <td>
                         {{recycle_data.date}}

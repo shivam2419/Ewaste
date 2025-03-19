@@ -23,24 +23,26 @@
             </form>
             {% for items in rooms %}
             <div class="facility-card">
-                <img src="{% if items.image %}{{ items.image.url }}{% else %}path/to/default/image.jpg{% endif %}"
-                alt="Facility Image"
-                     style="border-radius: 50%; height: 50px; margin-right: 10px; float: left;">
-                <h3 class="org-name">{{ items.organisation_name|upper }} (Id: {{ items.organisation_id|lower }})</h3>
-                <br>
-                <p class="address" style="margin-top: 20px;">
-                    ADDRESS: {{ items.street }}, {{ items.city }}, {{ items.state }}, {{ items.zipcode }}
+                <div class="facility-header">
+                    <img src="{% if items.image %}{{ items.image.url }}{% else %}/static/default.jpg{% endif %}"
+                         alt="Facility Image"
+                         class="facility-image">
+                    <h3 class="org-name">{{ items.organisation_name|upper }} (Id: {{ items.organisation_id|lower }})</h3>
+                </div>
+                <p class="address">
+                    <b>ADDRESS - </b> {{ items.street }}, {{ items.city }}, {{ items.state }}, {{ items.zipcode }}
+                </p>
+                <p class="distance">
+                    
                 </p>
                 <p class="lat" style="display: none;">{{ items.latitude }}</p>
                 <p class="long" style="display: none;">{{ items.longitude }}</p>
-                <br>
                 <p class="contact">
-                    Contact: {{ items.phone }}<br>
-                    Time: 23:12 A.M<br>
-                    Distance: 12.67 KM
+                    <b>Contact - </b> {{ items.phone }}<br>
                 </p>
+                <p class="distance"></p>
                 <a href="{% url 'recycle_main' items.organisation_id %}">Book Recycling</a>
-            </div>
+            </div>            
             {% endfor %}
         </div>
         <div class="col-2">
@@ -50,78 +52,117 @@
     {% endblock body %}
     
     {% block script %}
-        document.addEventListener('DOMContentLoaded', function () {
-            // Gather data from the document
-            var latElements = document.querySelectorAll(".lat");
-            var longElements = document.querySelectorAll(".long");
-            var orgNameElements = document.querySelectorAll(".org-name");
+    document.addEventListener('DOMContentLoaded', function () {
+        var latElements = document.querySelectorAll(".lat");
+        var longElements = document.querySelectorAll(".long");
+        var orgNameElements = document.querySelectorAll(".org-name");
+    
+        var myLat = Array.from(latElements).map(el => parseFloat(el.innerHTML));
+        var myLong = Array.from(longElements).map(el => parseFloat(el.innerHTML));
+        var orgNameList = Array.from(orgNameElements).map(el => el.innerHTML);
+        var orgIDs = Array.from(document.querySelectorAll(".facility-card")).map(el => el.querySelector("a").href.split("/").pop());
 
-            var myLat = Array.from(latElements).map(el => parseFloat(el.innerHTML));
-            var myLong = Array.from(longElements).map(el => parseFloat(el.innerHTML));
-            var orgNameList = Array.from(orgNameElements).map(el => el.innerHTML);
-
-            const mymap = L.map('mapid', {
-                center: [20, 80],
-                zoom: 5,
-                layers: [
-                    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    })
-                ]
-            });
-
-            // Add markers to the map
-            for (var i = 0; i < myLat.length; i++) {
-                if (!isNaN(myLat[i]) && !isNaN(myLong[i])) {
-                    const marker = L.marker([myLat[i], myLong[i]], {
-                        title: orgNameList[i]
-                    }).addTo(mymap);
-                    marker.bindPopup(orgNameList[i]);
-                }
-            }
-
-            mymap.on('click', function (e) {
-                L.Routing.control({
-                    waypoints: [
-                        L.latLng(28.47541284276062, 77.50047899775969),
-                        L.latLng(e.latlng.lat, e.latlng.lng)
-                    ]
-                }).addTo(mymap);
-            });
+        const mymap = L.map('mapid', {
+            center: [20, 80],
+            zoom: 5,
+            layers: [
+                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                })
+            ]
         });
-
-        // Get current location
-        function getLocation() {
+    
+        // Add markers for recyclers
+        let recyclerMarkers = [];
+        for (let i = 0; i < myLat.length; i++) {
+            if (!isNaN(myLat[i]) && !isNaN(myLong[i])) {
+                let marker = L.marker([myLat[i], myLong[i]], {
+                    title: orgNameList[i]
+                }).addTo(mymap);
+                marker.bindPopup(orgNameList[i]);
+                recyclerMarkers.push({ id: orgIDs[i], lat: myLat[i], lng: myLong[i], name: orgNameList[i], marker });
+            }
+        }
+    
+        // Get user location
+        function getUserLocation() {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(showPosition, showError);
+                navigator.geolocation.getCurrentPosition(showUserPosition, showError, {
+                    enableHighAccuracy: true, timeout: 10000, maximumAge: 0
+                });
             } else {
                 alert("Geolocation is not supported by this browser.");
             }
         }
-
-        function showPosition(position) {
-            var latitude = position.coords.latitude;
-            var longitude = position.coords.longitude;
-            alert("Latitude: " + latitude + "\nLongitude: " + longitude);
+    
+        function showUserPosition(position) {
+            let userLat = position.coords.latitude;
+            let userLong = position.coords.longitude;
+            console.log("User Location:", userLat, userLong);
+        
+            // Place user marker
+            let yourIcon = L.icon({
+                iconUrl: '/static/icon.png',  // Ensure this path is correct
+                iconSize: [80, 80],  // Adjust the size as needed
+                iconAnchor: [30, 80], // Point of the icon that corresponds to marker's location
+                popupAnchor: [0, -30] // Adjust popup position
+            });
+            
+            let userMarker = L.marker([userLat, userLong], { icon: yourIcon }).addTo(mymap)
+                .bindPopup("<b>Your Location</b>").openPopup();
+            
+            // Move map to user location
+            mymap.setView([userLat, userLong], 12);
+        
+            // Calculate and display distance to recyclers
+            recyclerMarkers.forEach((recycler, index) => {
+                let distance = getDistance(userLat, userLong, recycler.lat, recycler.lng);
+        
+                // Update distance in map popup
+                recycler.marker.bindPopup(`<b>${recycler.name}</b><br>Distance: ${distance.toFixed(2)} KM`).openPopup();
+        
+                // ✅ Update distance in the card
+                let facilityCards = document.querySelectorAll(".facility-card");
+                if (facilityCards[index]) {
+                    let distanceElement = facilityCards[index].querySelector(".distance");
+                    if (!distanceElement) {
+                        // If distance element does not exist, create it
+                        let newDistanceElement = document.createElement("p");
+                        newDistanceElement.classList.add("distance");
+                        newDistanceElement.innerHTML = `<b>Distance:</b> ${distance.toFixed(2)} KM`;
+                        facilityCards[index].appendChild(newDistanceElement);
+                    } else {
+                        // If it exists, update the text
+                        distanceElement.innerHTML = `<b>Distance:</b> ${distance.toFixed(2)} KM`;
+                    }
+                }
+            });
         }
-
+        
+    
         function showError(error) {
-            switch (error.code) {
-                case error.PERMISSION_DENIED:
-                    alert("User denied the request for Geolocation.");
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    alert("Location information is unavailable.");
-                    break;
-                case error.TIMEOUT:
-                    alert("The request to get user location timed out.");
-                    break;
-                case error.UNKNOWN_ERROR:
-                    alert("An unknown error occurred.");
-                    break;
-            }
+            alert("Error fetching location: " + error.message);
         }
+    
+        // Haversine formula to calculate distance between two coordinates
+        function getDistance(lat1, lon1, lat2, lon2) {
+            function toRad(value) {
+                return value * Math.PI / 180;
+            }
+            var R = 6371; // Earth radius in KM
+            var dLat = toRad(lat2 - lat1);
+            var dLon = toRad(lon2 - lon1);
+            var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c; // Distance in KM
+        }
+    
+        getUserLocation();
+    });
     {% endblock script %}
+
 </body>
 
 </html>

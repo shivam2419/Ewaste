@@ -61,24 +61,25 @@
     <h1>Pending Orders : </h1>
     <table>
         <tr>
-            <th>Name : </th>
-            <th>Brand : </th>
-            <th>Model : </th>
-            <th>Location : </th>
-            <th>Delievery type : </th>
-            <th>Pay Amount</th>
+            <th>Order Id </th>
+            <th>Username </th>
+            <th>Item type </th>
+            <th>Location </th>
+            <th>Phone number </th>
+            <th>Payment Status</th>
         </tr>
-    {% for items in data %}
-    <tr>
-        <td>{{items.name}}</td>
-        <td>{{items.brand}}</td>
-        <td>{{items.model}}</td>
-        <td>{{items.location}}</td>
-        <td>{{items.facility}}</td>
-        <td>PAID</td>
-        <br>
-    </tr>
-    {% endfor %}
+        {% for items in data %}
+        <tr>
+            <td>{{items.order_id}}</td>
+            <td>{{items.user_id|capfirst}}</td>
+            <td>{{items.item_type}}</td>
+            <td>{{items.location}}</td>
+            <td>{{items.phone}}</td>
+            <td>Paid</td>
+
+        </tr>
+        {% endfor %}
+
     
 </table>
 </body>

@@ -8,11 +8,12 @@ class Login(models.Model):
     name = models.EmailField()
     pswrd = models.CharField(max_length=16)
 
-class Signup(models.Model):
-    username = models.CharField(max_length=100)
-    email = models.EmailField()
-    password = models.CharField(max_length=16)
-    confirm_password = models.CharField(max_length=16)
+class endUser(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    enduser_id = models.AutoField(primary_key=True)
+    image = models.ImageField(upload_to='images/', null=True)
+    phone = models.CharField(max_length=16)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
 
 class QNA(models.Model):
     questions = models.CharField(max_length=1000)
@@ -22,11 +23,12 @@ class Index_gmails(models.Model):
     emails = models.EmailField()
 
 class Owner(models.Model):
-    image = models.ImageField(upload_to='images/', null=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     organisation_id = models.AutoField(primary_key=True)
     organisation_name = models.CharField(max_length=200)
-    phone = models.IntegerField()
-
+    image = models.ImageField(upload_to='images/', null=True)
+    phone = models.IntegerField(null=True)
+    # Address section
     street = models.CharField(max_length=400, null=True, default="")
     city = models.CharField(max_length=400, null=True, default="")
     state = models.CharField(max_length=400, null=True, default="")

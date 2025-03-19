@@ -5,27 +5,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EWaste | {% block title %}{% endblock title %}</title>
+
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="{% static 'base.css' %}">
     <link rel="stylesheet" href="{% block css %}{% endblock css %}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-    <!-- Load Leaflet CSS and JS -->
+    <!-- Leaflet Maps -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-    <!-- Load Leaflet Routing Machine CSS and JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
     <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
-        <!--AOS-->
+
+    <!-- AOS Animation -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
     <style>
-        /* Sidebar CSS */
-        #mySidebar{
-            display: none;
-        }
+        /* Sidebar */
+        #mySidebar { display: none; }
         .sidebar {
             height: 100%;
             width: 250px;
@@ -56,7 +55,6 @@
             top: 10px;
             right: 25px;
             font-size: 36px;
-            margin-left: 50px;
         }
         .openbtn {
             font-size: 24px;
@@ -67,27 +65,55 @@
             background-color: white;
             margin-right: 10px;
         }
-        .openbtn:hover {
-            scale : 1.1;
-        }
-        /* Page content */
+        .openbtn:hover { scale: 1.1; }
         .main-content {
-            margin-left: 0; /* Same as the width of the sidebar */
+            margin-left: 0;
             transition: margin-left .5s;
         }
-        /* Responsive layout */
+        .footer-about {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .footer-about form {
+            position: relative;
+            width: 100%;
+        }
+        
+        .footer-about input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        
+        .footer-about button {
+            position: absolute;
+            right: 1px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .footer-about button img {
+            width: 30px;
+            height: 30px;
+        }
+        
         @media screen and (max-width: 768px) {
             .sidebar {
                 width: 0;
                 position: absolute;
             }
-            .main-content {
-                margin-left: 0;
-            }
+            .main-content { margin-left: 0; }
         }
     </style>
 </head>
-<body >
+<body>
     <!-- Sidebar -->
     <div id="mySidebar" class="sidebar">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
@@ -96,7 +122,7 @@
         <a href="{% url 'e-facility' %}">E-Facilities</a>
         <a href="{% url 'education' %}">Education</a>
         <a href="{% url 'contact' %}">Contact Us</a>
-        <a href="{% url 'search' %}">Search</a>
+        <a href="{% url 'search' %}">ChatBot</a>
         {% if user.is_authenticated %}
         <a href="{% url 'classifyImage' %}">Classify-Image</a>
         <a href="{% url 'notification' %}">Notifications</a>
@@ -109,69 +135,63 @@
 
     <!-- Page content -->
     <div class="main-content">
-        <div class="nav">
-            <nav>
-                <span>                    
-                    <button class="openbtn" onclick="openNav()">☰</button>
-                    <a href="#" class="logo"><img src="../static/logo.png" alt="">
-                    </a>
-                </span>
-                <ul class="nav-links">
-                    <li><a href="{% url "index" %}">Home</a></li>
-                    <li><a href="{% url "about" %}">About Us</a></li>
-                    <li><a href="{% url "e-facility" %}">E-Facilities</a></li>
-                    <li><a href="{% url "education" %}">Education</a></li>
-                    <li><a href="{% url "contact" %}">Contact Us</a></li>
-                    <li><a href="{% url "search" %}">Search</a></li>
-                    <li><a href="{% url 'classifyImage' %}">Classify-Image</a></li>
-                </ul>
-                {% if user.is_authenticated %}
-                <div class="right_side" style="display: flex;">
-                    {% if not request.user.is_staff %}
-                    <button id="notification"><a href="{% url 'notification' %}"><img src="{% static 'notification.png' %}" alt="" ></a></button>
+        <nav>
+            <span>
+                <button class="openbtn" onclick="openNav()">☰</button>
+                <a href="#" class="logo"><img src="{% static 'logo.png' %}" alt=""></a>
+            </span>
+            <ul class="nav-links">
+                <li><a href="{% url 'index' %}">Home</a></li>
+                <li><a href="{% url 'about' %}">About Us</a></li>
+                <li><a href="{% url 'e-facility' %}">E-Facilities</a></li>
+                <li><a href="{% url 'education' %}">Education</a></li>
+                <li><a href="{% url 'contact' %}">Contact Us</a></li>
+                <li><a href="{% url 'search' %}">ChatBot</a></li>
+                <li><a href="{% url 'classifyImage' %}">Classify-Image</a></li>
+            </ul>
+
+            {% if user.is_authenticated %}
+            <div class="right_side" style="display: flex;">
+                {% if not request.user.is_staff %}
+                <button id="notification">
+                    <a href="{% url 'notification' %}"><img src="{% static 'notification.png' %}" alt=""></a>
+                </button>
                 {% endif %}
                 <li class="nav-item dropdown">
                     <span class="profile-image" id="profileImage">
-                        <img src="{% static 'owner2.jpg' %}" alt="Profile"  >
-                        <p>{{user.username|upper}}</p>
+                        <img src="{{ request.user.enduser.image.url }}" alt="Profile">
+                        <p>{{ user.username|upper }}</p>
                     </span>
-                    
                     <div class="dropdown-menu" id="dropdownMenu">
-                      <a href="{% url 'logout' %}">Logout</a>
-                      <a href="{% url 'profile' %}">Profile</a>
+                        <a href="{% url 'logout' %}">Logout</a>
+                        <a href="{% url 'profile' %}">Profile</a>
                     </div>
-                  </li>
-                </div>
-                {% else %}
-                <span>
-                    <a href="{% url "login" %}" class="btn">LOGIN</a>
-                </span>
-                {% endif %}
-            </nav>
-        </div>
-        
-        {% block body %}
-        {% endblock body %}
-        
+                </li>
+            </div>
+            {% else %}
+            <span><a href="{% url 'login' %}" class="btn">LOGIN</a></span>
+            {% endif %}
+        </nav>
+
+        {% block body %}{% endblock body %}
+
         <footer>
             <div class="footer-about">
                 <form action="{% url 'mails' %}" method="POST">
                     {% csrf_token %}
-                    <span><img src="../static/logo footer.png" alt=""> SCRAP BRIDGE</span>
+                    <span><img src="{% static 'logo footer.png' %}" alt=""> SCRAP BRIDGE</span>
                     <p>&copy; 2024 E-Wasteguard. All rights reserved.</p>
-            <p>
-                Dedicated to sustainable e-waste management and environmental protection.
-            </p>
-                    <input type="email" placeholder="Enter your email*" name="index_gmail">
-                    <span>
-                        <button type="submit">
-                            <a href="">
-                                <img src="../static/send.jpg" alt="">
-                            </a>
+                    <p>Dedicated to sustainable waste management and environmental protection.</p>
+            
+                    <div style="position: relative; width: 100%; max-width: 200px;">
+                        <input type="email" placeholder="Enter your email*" name="index_gmail" required>
+                        <button type="submit" style="width: 10px; height: 30px;">
+                            <img src="{% static 'send.jpg' %}" alt="Send">
                         </button>
-                    </span>
+                    </div>
                 </form>
             </div>
+            
             <div class="footer-services">
                 <h3>Our Services</h3>
                 <p>Sell Scrap</p>
@@ -179,70 +199,21 @@
             </div>
             <div class="footer-company">
                 <h3>Company</h3>
-                <a href="{% static "index" %}">About Us</a><br>
-                <a href="{% static "recycle" %}">E-Waste Facilities</a><br>
-                <a href="{% static "education" %}">Education</a><br>
-                <a href="{% static "contact" %}">Contact Us</a><br>
-            </div>
-            <div class="footer-contact">
-                <h3>Contact Us</h3>
-                <i class="fa fa-map-marker">&nbsp;Faridabad, 121002</i><br>
-                <i class="fa fa-phone">&nbsp;+91 9932313440</i><br>
-                <i class="fa fa-envelope">&nbsp;shivam241980@gmail.com</i>
-                <h1></h1>
-                <i class="fa fa-linkedin-square" style="border: 1px solid black; padding: 8px;"></i>
-                <i class="fa fa-instagram" style="border: 1px solid black; padding: 8px;"></i>
-                <i class="fa fa-facebook-f" style="border: 1px solid black; padding: 8px;"></i>
-                <i class="fa fa-whatsapp" style="border: 1px solid black; padding: 8px;"></i>
+                <a href="{% url 'about' %}">About Us</a><br>
+                <a href="{% url 'e-facility' %}">E-Waste Facilities</a><br>
+                <a href="{% url 'education' %}">Education</a><br>
+                <a href="{% url 'contact' %}">Contact Us</a><br>
             </div>
         </footer>
     </div>
+
     <script>
-    {% block script %}
-    {% endblock script %}
-    </script>
-    <!-- JavaScript for sidebar toggle -->
-    <script>
-        function openNav() {
-            document.getElementById("mySidebar").style.display = "block";
-            document.getElementById("mySidebar").style.width = "40vh";
-            document.getElementById("mySidebar").style.height = "98%";
-        }
-
-        function closeNav() {
-            document.getElementById("mySidebar").style.width = "0";
-            document.querySelector(".main-content").style.display= "block";
-            document.querySelector(".main-content").style.marginLeft= "0";
-        }
-
-        document.addEventListener("DOMContentLoaded", function() {
-            const profileImage = document.getElementById("profileImage");
-            const dropdownMenu = document.getElementById("dropdownMenu");
-
-            // Show dropdown menu when hovering over image or dropdown menu itself
-            profileImage.addEventListener("mouseenter", function() {
-                dropdownMenu.style.display = "block";
-            });
-
-            dropdownMenu.addEventListener("mouseenter", function() {
-                dropdownMenu.style.display = "block";
-            });
-
-            // Hide dropdown menu when leaving dropdown menu
-            dropdownMenu.addEventListener("mouseleave", function() {
-                dropdownMenu.style.display = "none";
-            });
-
-            // Hide dropdown menu when leaving profile image
-            profileImage.addEventListener("mouseleave", function(event) {
-                // Check if the mouse is not moving into the dropdown menu
-                if (!dropdownMenu.contains(event.relatedTarget)) {
-                    dropdownMenu.style.display = "none";
-                }
-            });
-        });
-
+        function openNav() { document.getElementById("mySidebar").style.display = "block"; }
+        function closeNav() { document.getElementById("mySidebar").style.display = "none"; }
         AOS.init();
+    </script>
+    <script>
+        {% block script %}{% endblock script %} 
     </script>
 </body>
 </html>
