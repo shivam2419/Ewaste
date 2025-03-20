@@ -8,9 +8,6 @@ model_path = 'C:\\Django\\eWaste\\EWaste\\myApp\\scrap_classifier.h5'
 if not os.path.exists(model_path):
     raise FileNotFoundError(f"Model file not found at {model_path}")
 
-# Load the model
-model = load_model(model_path)
-
 # Define your class names
 class_names =  [
     "beverage-cans", "cardboard", "construction-scrap", "electrical-cables",
@@ -25,7 +22,8 @@ class_names =  [
 def classify_image(img_path):
     if not os.path.exists(img_path):
         raise FileNotFoundError(f"Image file not found at {img_path}")
-
+    # Load the model
+    model = load_model(model_path)
     # Load the image
     img = image.load_img(img_path, target_size=(128, 128))
     img_array = image.img_to_array(img)  # Convert to array
