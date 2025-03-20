@@ -40,7 +40,7 @@ def classify_image(img_path):
     print(predicted_class, confidence)
     return predicted_class, confidence
 
-'''
+'''  
 # MODEL CODE : 
 import os
 import numpy as np
