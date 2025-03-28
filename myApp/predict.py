@@ -4,7 +4,7 @@ from tensorflow.keras.models import load_model
 import os
 
 # Check for model existence
-model_path = 'C:\\Django\\eWaste\\EWaste\\myApp\\scrap_classifier.h5'
+model_path = 'myApp/scrap_classifier.h5'
 if not os.path.exists(model_path):
     raise FileNotFoundError(f"Model file not found at {model_path}")
 
